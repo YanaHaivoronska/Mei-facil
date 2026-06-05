@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F6E56">
+<meta name="description" content="MEI Fácil — Controle financeiro para microempreendedor individual">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MEI Fácil">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>MEI Fácil</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#0F6E56;--green-mid:#1D9E75;--green-bg:#E1F5EE;--green-txt:#085041;
+  --red:#D85A30;--red-dark:#993C1D;--red-bg:#FAECE7;--red-txt:#712B13;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --amber:#BA7517;--amber-bg:#FAEEDA;--amber-txt:#633806;
+  --purple:#534AB7;
+  --bg:#f4f4f4;--surface:#fff;--txt:#1a1a1a;--txt2:#666;--border:#e0e0e0;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#111;--surface:#1c1c1e;--txt:#f0f0f0;--txt2:#999;--border:#2c2c2e;
+  --green-bg:#04342C;--green-txt:#9FE1CB;--red-bg:#4A1B0C;--red-txt:#F0997B;
+  --blue-bg:#042C53;--blue-txt:#85B7EB;--amber-bg:#412402;--amber-txt:#FAC775;}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;min-height:100vh;background:var(--surface);display:flex;flex-direction:column}
+.topbar{background:var(--green);padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 12px;color:#fff;flex-shrink:0}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:17px;font-weight:700;letter-spacing:-.2px}
+.topbar-sub{font-size:11px;opacity:.8;margin-top:2px}
+.topbar-das{font-size:11px;opacity:.9;text-align:right;line-height:1.5}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0)}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 2px 10px;font-size:10px;color:var(--txt2);cursor:pointer;border:none;background:none;width:100%;line-height:1.2;transition:color .15s}
+.nb.on{color:var(--green)}
+.nb i{font-size:22px}
+.body{flex:1;overflow-y:auto;padding:14px;padding-bottom:80px;-webkit-overflow-scrolling:touch}
+.sec{display:none}
+.sec.on{display:block}
+.slbl{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.metrics2{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.mc{background:var(--bg);border-radius:12px;padding:12px 13px}
+.mc-l{font-size:11px;color:var(--txt2);margin-bottom:3px}
+.mc-v{font-size:19px;font-weight:700;color:var(--txt)}
+.mc-v.g{color:var(--green)}.mc-v.r{color:var(--red-dark)}.mc-v.b{color:var(--blue)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.card-ttl{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+input,select{width:100%;height:44px;padding:0 13px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--txt);font-size:15px;font-family:inherit;margin-bottom:9px;outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--green)}
+.btn2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.abtn{height:46px;border-radius:11px;font-size:15px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;transition:opacity .15s,transform .1s}
+.abtn:active{opacity:.8;transform:scale(.98)}
+.abtn.g{background:var(--green-mid);color:#fff}
+.abtn.r{background:var(--red);color:#fff}
+.abtn.b{background:var(--blue);color:#fff}
+.abtn.s{background:var(--bg);color:var(--txt);border:1px solid var(--border)}
+.abtn.full{margin-top:8px}
+.tx-list{display:flex;flex-direction:column;gap:7px}
+.txi{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 13px;display:flex;align-items:flex-start;gap:10px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot.g{background:var(--green-mid)}.dot.r{background:var(--red)}
+.ti-info{flex:1;min-width:0}
+.ti-desc{font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ti-meta{font-size:11px;color:var(--txt2);margin-top:2px}
+.ti-right{text-align:right;flex-shrink:0}
+.tval{font-size:14px;font-weight:700}
+.tval.pos{color:var(--green)}.tval.neg{color:var(--red-dark)}
+.tibtn{background:none;border:none;cursor:pointer;color:var(--txt2);font-size:15px;padding:3px 5px;border-radius:7px;margin-top:4px;display:block}
+.badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:600}
+.badge.g{background:var(--green-bg);color:var(--green-txt)}
+.badge.r{background:var(--red-bg);color:var(--red-txt)}
+.thumb{width:52px;height:40px;border-radius:7px;object-fit:cover;border:1px solid var(--border);margin-top:5px;cursor:pointer}
+.photo-btn{display:flex;align-items:center;gap:7px;padding:11px 13px;border:1.5px dashed var(--border);border-radius:11px;background:none;color:var(--txt2);font-size:13px;cursor:pointer;width:100%;justify-content:center;margin-top:9px;transition:border-color .2s}
+.photo-btn:hover{border-color:var(--green);color:var(--green)}
+.fs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.fs::-webkit-scrollbar{display:none}
+.fbtn{padding:6px 15px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:none;color:var(--txt2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.fbtn.on{background:var(--txt);color:var(--surface);border-color:var(--txt)}
+.decl-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.decl-row:last-child{border-bottom:none}
+.decl-lbl{color:var(--txt2)}
+.decl-tot{font-weight:700;font-size:14px}
+.bar-w{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar-f{height:100%;border-radius:4px;transition:width .5s}
+.alerta{background:var(--amber-bg);border-radius:11px;padding:11px 13px;font-size:12px;color:var(--amber-txt);display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;line-height:1.5}
+.lembrete{background:var(--blue-bg);border-radius:11px;padding:10px 12px;font-size:12px;color:var(--blue-txt);display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;line-height:1.5}
+.lembrete.ok{background:var(--green-bg);color:var(--green-txt)}
+.lembrete.venc{background:var(--red-bg);color:var(--red-txt)}
+.chart-wrap{position:relative;width:100%;height:195px;margin-top:10px}
+.ano-sel{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ano-btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:7px 16px;font-size:16px;cursor:pointer;color:var(--txt);transition:background .15s}
+.ano-btn:active{background:var(--border)}
+.ano-val{font-size:17px;font-weight:700;color:var(--txt)}
+.ajuda-i{background:var(--bg);border-radius:13px;padding:13px 15px;margin-bottom:9px}
+.ajuda-t{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.ajuda-d{font-size:12px;color:var(--txt2);line-height:1.65}
+.cam-bg{background:rgba(0,0,0,.55);border-radius:15px;padding:16px;margin-bottom:10px}
+.cam-box{background:var(--surface);border-radius:14px;padding:15px}
+.cam-ttl{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.cam-prev{width:100%;height:165px;background:var(--bg);border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:11px;overflow:hidden}
+.cam-prev video,.cam-prev img{width:100%;height:100%;object-fit:cover;border-radius:11px}
+.empty{text-align:center;padding:28px 0;color:var(--txt2);font-size:13px;line-height:1.8}
+.export-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.leg{display:flex;gap:14px;margin-top:9px;font-size:12px;color:var(--txt2);flex-wrap:wrap}
+.leg span{display:flex;align-items:center;gap:4px}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.pwa-banner{display:none;background:var(--green-bg);border:1px solid var(--green-mid);border-radius:13px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--green-txt);align-items:center;gap:10px;line-height:1.5}
+.pwa-banner.show{display:flex}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:9999}
+@media(prefers-color-scheme:dark){.toast{background:#f0f0f0;color:#111}}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div>
+        <div class="topbar-title"><i class="ti ti-receipt-tax" style="font-size:16px;margin-right:5px"></i>MEI Fácil</div>
+        <div class="topbar-sub" id="top-sub">Carregando...</div>
+      </div>
+      <div class="topbar-das" id="top-das"></div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- HOME -->
+    <div id="s-home" class="sec on">
+      <div class="pwa-banner" id="pwa-banner">
+        <i class="ti ti-download" style="font-size:22px;flex-shrink:0"></i>
+        <div style="flex:1"><strong>Instalar o app</strong><br><span id="pwa-txt">Adicione à tela inicial para usar offline</span></div>
+        <button onclick="installPWA()" id="pwa-install-btn" style="display:none;height:34px;padding:0 13px;border-radius:8px;background:var(--green);color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Instalar</button>
+        <button onclick="document.getElementById('pwa-banner').classList.remove('show')" style="background:none;border:none;cursor:pointer;color:var(--green-txt);font-size:20px;line-height:1;flex-shrink:0"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="metrics2" id="m-home"></div>
+      <div class="slbl">Lançamentos</div>
+      <div class="fs">
+        <button class="fbtn on" onclick="filt('todos',this)">Todos</button>
+        <button class="fbtn" onclick="filt('receita',this)">Receitas</button>
+        <button class="fbtn" onclick="filt('despesa',this)">Despesas</button>
+      </div>
+      <div class="tx-list" id="tx-home"></div>
+    </div>
+
+    <!-- LANÇAR -->
+    <div id="s-novo" class="sec">
+      <div class="slbl">Novo lançamento</div>
+      <div class="card">
+        <input type="text" id="n-desc" placeholder="Descrição (ex: Venda de produto)">
+        <select id="n-cat">
+          <optgroup label="— Receitas —">
+            <option>Venda de produtos</option>
+            <option>Prestação de serviços</option>
+            <option>Outras receitas</option>
+          </optgroup>
+          <optgroup label="— Despesas —">
+            <option>Matéria-prima / estoque</option>
+            <option>Aluguel</option>
+            <option>Energia / água / internet</option>
+            <option>Transporte / frete</option>
+            <option>Marketing / publicidade</option>
+            <option>Equipamentos / ferramentas</option>
+            <option>DAS-MEI (imposto)</option>
+            <option>Outros gastos</option>
+          </optgroup>
+        </select>
+        <input type="number" id="n-val" placeholder="Valor em R$" min="0" step="0.01" inputmode="decimal">
+        <input type="month" id="n-mes">
+        <button class="photo-btn" id="photo-btn-main" onclick="openCam()">
+          <i class="ti ti-camera" style="font-size:19px"></i> Tirar foto do comprovante / cheque
+        </button>
+        <div id="photo-prev-wrap" style="display:none;margin-top:10px">
+          <div style="display:flex;align-items:center;gap:9px">
+            <img id="photo-prev-img" class="thumb" src="" alt="comprovante">
+            <span style="font-size:12px;color:var(--txt2);flex:1">Comprovante anexado</span>
+            <button class="tibtn" onclick="removePhoto()"><i class="ti ti-x"></i></button>
+          </div>
+        </div>
+        <div class="btn2">
+          <button class="abtn g" onclick="addTx()"><i class="ti ti-plus"></i>Receita</button>
+          <button class="abtn r" onclick="addTxD()"><i class="ti ti-minus"></i>Despesa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂMERA -->
+    <div id="s-cam" class="sec">
+      <div class="slbl">Fotografar comprovante</div>
+      <div class="cam-bg">
+        <div class="cam-box">
+          <div class="cam-ttl"><i class="ti ti-camera" style="color:var(--green)"></i>Câmera</div>
+          <div class="cam-prev" id="cam-prev">
+            <video id="cam-vid" autoplay playsinline muted style="display:none"></video>
+            <canvas id="cam-can" style="display:none"></canvas>
+            <img id="cam-img" style="display:none" alt="foto capturada">
+            <div id="cam-ph" style="display:flex;flex-direction:column;align-items:center;gap:9px;color:var(--txt2)">
+              <i class="ti ti-camera" style="font-size:38px"></i>
+              <span style="font-size:13px">Câmera inativa</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="abtn g" id="snap-btn" onclick="snapPhoto()"><i class="ti ti-camera"></i>Fotografar</button>
+            <button class="abtn s" onclick="closeCam()"><i class="ti ti-x"></i>Cancelar</button>
+          </div>
+          <div id="cam-use-wrap" style="display:none;margin-top:8px">
+            <button class="abtn g full" onclick="usePhoto()"><i class="ti ti-check"></i>Usar esta foto</button>
+            <button class="abtn s full" style="margin-top:7px" onclick="retakePhoto()"><i class="ti ti-refresh"></i>Nova foto</button>
+          </div>
+          <div style="margin-top:13px">
+            <div style="font-size:12px;color:var(--txt2);margin-bottom:6px"><i class="ti ti-photo" style="font-size:14px;vertical-align:-2px"></i> Ou escolher da galeria:</div>
+            <input type="file" accept="image/*" id="file-inp" style="height:auto;padding:7px 0;border:none;margin:0;font-size:12px;color:var(--txt)" onchange="loadFile(this)">
+          </div>
+          <div id="cam-st" style="font-size:12px;color:var(--txt2);margin-top:8px;text-align:center;min-height:16px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DECLARAÇÃO -->
+    <div id="s-decl" class="sec">
+      <div class="ano-sel">
+        <button class="ano-btn" onclick="anoStep(-1)">‹</button>
+        <span class="ano-val" id="ano-disp">2025</span>
+        <button class="ano-btn" onclick="anoStep(1)">›</button>
+      </div>
+      <div id="decl-body"></div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div id="s-rel" class="sec">
+      <div class="card">
+        <div class="card-ttl"><i class="ti ti-chart-bar" style="color:var(--blue)"></i>Gráfico anual</div>
+        <div class="fs" id="chart-ano-sel"></div>
+        <div class="chart-wrap"><canvas id="chart-main" role="img" aria-label="Gráfico de receitas, despesas e lucro por mês"></canvas></div>
+        <div class="leg">
+          <span><span class="leg-dot" style="background:#1D9E75"></span>Receitas</span>
+          <span><span class="leg-dot" style="background:#D85A30"></span>Despesas</span>
+          <span><span class="leg-dot" style="background:#185FA5;opacity:.7"></span>Lucro</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-ttl"><i class="ti ti-download" style="color:var(--green)"></i>Exportar dados</div>
+        <div class="export-row">
+          <button class="abtn g" onclick="exportCSV()"><i class="ti ti-file-spreadsheet"></i>CSV / Excel</button>
+          <button class="abtn b" onclick="exportPDF()"><i class="ti ti-file-type-pdf"></i>Relatório</button>
+        </div>
+        <p style="font-size:12px;color:var(--txt2);line-height:1.65">O CSV abre no Excel ou Google Sheets. O relatório HTML contém o resumo completo para enviar ao contador.</p>
+      </div>
+      <div class="card">
+        <div class="card-ttl"><i class="ti ti-bell" style="color:var(--amber)"></i>Lembretes DAS-MEI</div>
+        <div id="lembretes"></div>
+      </div>
+    </div>
+
+    <!-- AJUDA -->
+    <div id="s-info" class="sec">
+      <div class="ajuda-i">
+        <div class="ajuda-t"><i class="ti ti-calendar" style="color:var(--green)"></i>Prazo DASN-SIMEI</div>
+        <div class="ajuda-d">A declaração anual deve ser entregue até 31 de maio de cada ano, referente ao ano anterior. Mesmo sem movimento é obrigatório declarar.</div>
+      </div>
+      <div class="ajuda-i">
+        <div class="ajuda-t"><i class="ti ti-trending-up" style="color:var(--blue)"></i>Limite de faturamento</div>
+        <div class="ajuda-d">O MEI pode faturar até R$ 81.000 por ano (R$ 6.750/mês). Ultrapassar esse limite pode resultar em desenquadramento do regime.</div>
+      </div>
+      <div class="ajuda-i">
+        <div class="ajuda-t"><i class="ti ti-calculator" style="color:var(--amber)"></i>Base tributável IRPF</div>
+        <div class="ajuda-d">Comércio/indústria: 8% da receita bruta é tributável. Serviços: 32% da receita bruta é tributável. O restante é isento como lucro distribuído ao sócio.</div>
+      </div>
+      <div class="ajuda-i">
+        <div class="ajuda-t"><i class="ti ti-coin" style="color:var(--red-dark)"></i>DAS-MEI mensal</div>
+        <div class="ajuda-d">O DAS-MEI deve ser pago mensalmente até o dia 20. O vencimento no domingo ou feriado antecipa para o dia útil anterior.</div>
+      </div>
+      <div class="ajuda-i">
+        <div class="ajuda-t"><i class="ti ti-camera" style="color:var(--purple)"></i>Comprovantes e cheques</div>
+        <div class="ajuda-d">Fotografe cheques e recibos no momento do lançamento. As imagens ficam salvas junto ao registro para comprovação ou envio ao contador.</div>
+      </div>
+      <div class="ajuda-i">
+        <div class="ajuda-t"><i class="ti ti-device-mobile" style="color:var(--green)"></i>Instalar no celular</div>
+        <div class="ajuda-d"><strong>Android:</strong> Menu do Chrome (⋮) → "Adicionar à tela inicial".<br><strong>iPhone:</strong> Botão Compartilhar → "Adicionar à Tela de Início".<br>O app funciona offline após instalado.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav">
+    <button class="nb on" id="nb-home" onclick="go('home')"><i class="ti ti-home"></i>Início</button>
+    <button class="nb" id="nb-novo" onclick="go('novo')"><i class="ti ti-plus"></i>Lançar</button>
+    <button class="nb" id="nb-decl" onclick="go('decl')"><i class="ti ti-file-invoice"></i>Declaração</button>
+    <button class="nb" id="nb-rel" onclick="go('rel')"><i class="ti ti-chart-bar"></i>Relatórios</button>
+    <button class="nb" id="nb-info" onclick="go('info')"><i class="ti ti-info-circle"></i>Ajuda</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+let txs=[],currentPhoto=null,stream=null,capturedUrl=null,activeFilter='todos',anoSel=new Date().getFullYear(),chartInst=null,currentAnoChart=new Date().getFullYear(),pendingTipo=null,deferredPrompt=null;
+const RCATS=['Venda de produtos','Prestação de serviços','Outras receitas'];
+const LIMITE=81000;
+const MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+try{txs=JSON.parse(localStorage.getItem('meifacil_v2')||'[]')}catch(e){}
+
+function fmt(v){return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function save(){try{localStorage.setItem('meifacil_v2',JSON.stringify(txs))}catch(e){}}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('pwa-banner').classList.add('show');
+  document.getElementById('pwa-txt').textContent='Instale o app direto no seu celular!';
+  document.getElementById('pwa-install-btn').style.display='block';
+});
+
+function installPWA(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('pwa-banner').classList.remove('show')})}}
+
+function go(sec){
+  ['home','novo','cam','decl','rel','info'].forEach(s=>document.getElementById('s-'+s).classList.toggle('on',s===sec));
+  ['home','novo','decl','rel','info'].forEach(s=>{const b=document.getElementById('nb-'+s);if(b)b.classList.toggle('on',s===sec)});
+  if(sec==='home')renderHome();
+  if(sec==='decl')renderDecl();
+  if(sec==='rel')renderRel();
+  if(sec!=='cam')stopCam();
+  updateTopbar();
+  document.querySelector('.body').scrollTop=0;
+}
+
+function updateTopbar(){
+  const hoje=new Date();
+  document.getElementById('top-sub').textContent=hoje.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const dias=20-hoje.getDate();
+  const el=document.getElementById('top-das');
+  if(dias>0)el.innerHTML=`DAS em ${dias} dias`;
+  else if(dias===0)el.innerHTML=`DAS vence hoje!`;
+  else el.innerHTML=`<span style="color:#ffcdd2">DAS venceu!</span>`;
+}
+
+function filt(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderHome();
+}
+
+function renderHome(){
+  const rec=txs.filter(t=>t.tipo==='receita').reduce((a,t)=>a+t.val,0);
+  const dep=txs.filter(t=>t.tipo==='despesa').reduce((a,t)=>a+t.val,0);
+  const luc=rec-dep;const pct=rec>0?Math.round((luc/rec)*100):0;
+  document.getElementById('m-home').innerHTML=
+    `<div class="mc"><div class="mc-l">Receitas</div><div class="mc-v g">${fmt(rec)}</div></div>
+     <div class="mc"><div class="mc-l">Despesas</div><div class="mc-v r">${fmt(dep)}</div></div>
+     <div class="mc"><div class="mc-l">Lucro</div><div class="mc-v ${luc>=0?'g':'r'}">${fmt(luc)}</div></div>
+     <div class="mc"><div class="mc-l">Margem</div><div class="mc-v b">${pct}%</div></div>`;
+  const filtered=activeFilter==='todos'?txs:txs.filter(t=>t.tipo===activeFilter);
+  if(!filtered.length){document.getElementById('tx-home').innerHTML='<div class="empty">Nenhum lançamento ainda.<br>Toque em <strong>Lançar</strong> para começar.</div>';return;}
+  document.getElementById('tx-home').innerHTML=filtered.slice(0,50).map(t=>
+    `<div class="txi">
+      <div class="dot ${t.tipo==='receita'?'g':'r'}"></div>
+      <div class="ti-info">
+        <div class="ti-desc">${escHtml(t.desc)}</div>
+        <div class="ti-meta"><span class="badge ${t.tipo==='receita'?'g':'r'}">${t.cat}</span> · ${t.mes||''}</div>
+        ${t.photo?`<img class="thumb" src="${t.photo}" alt="comprovante" onclick="viewThumb(${t.id})">`:''} 
+      </div>
+      <div class="ti-right">
+        <div class="tval ${t.tipo==='receita'?'pos':'neg'}">${t.tipo==='receita'?'+':'-'} ${fmt(t.val)}</div>
+        <button class="tibtn" onclick="delTx(${t.id})" aria-label="Excluir"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function addTx(){doAdd('receita')}
+function addTxD(){doAdd('despesa')}
+
+function doAdd(forceType){
+  const desc=document.getElementById('n-desc').value.trim();
+  const cat=document.getElementById('n-cat').value;
+  const val=parseFloat(document.getElementById('n-val').value);
+  const mes=document.getElementById('n-mes').value;
+  if(!desc){toast('Informe a descrição.');return;}
+  if(!val||val<=0){toast('Informe um valor válido.');return;}
+  if(!mes){toast('Selecione o mês.');return;}
+  const tipo=forceType||(RCATS.includes(cat)?'receita':'despesa');
+  txs.unshift({id:Date.now(),desc,cat,val,mes,tipo,photo:currentPhoto||null});
+  save();
+  document.getElementById('n-desc').value='';
+  document.getElementById('n-val').value='';
+  currentPhoto=null;
+  document.getElementById('photo-prev-wrap').style.display='none';
+  document.getElementById('photo-btn-main').style.display='flex';
+  toast('Lançamento salvo!');
+  go('home');
+}
+
+function delTx(id){
+  if(!confirm('Excluir este lançamento?'))return;
+  txs=txs.filter(t=>t.id!==id);save();renderHome();
+}
+
+function viewThumb(id){
+  const t=txs.find(x=>x.id==id);if(!t||!t.photo)return;
+  capturedUrl=t.photo;
+  document.getElementById('cam-img').src=capturedUrl;
+  document.getElementById('cam-img').style.display='block';
+  document.getElementById('cam-ph').style.display='none';
+  document.getElementById('cam-vid').style.display='none';
+  document.getElementById('cam-use-wrap').style.display='none';
+  document.getElementById('cam-st').textContent='Comprovante do lançamento';
+  go('cam');
+}
+
+function openCam(){
+  capturedUrl=null;
+  document.getElementById('cam-img').style.display='none';
+  document.getElementById('cam-ph').style.display='flex';
+  document.getElementById('cam-use-wrap').style.display='none';
+  document.getElementById('cam-st').textContent='';
+  go('cam');
+  startCamera();
+}
+
+function startCamera(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    document.getElementById('cam-st').textContent='Câmera não disponível. Use a galeria abaixo.';return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false})
+    .then(s=>{
+      stream=s;
+      const v=document.getElementById('cam-vid');
+      v.srcObject=s;v.style.display='block';
+      document.getElementById('cam-ph').style.display='none';
+      document.getElementById('cam-st').textContent='Aponte para o cheque ou comprovante';
+    })
+    .catch(()=>document.getElementById('cam-st').textContent='Sem permissão de câmera. Use a galeria.');
+}
+
+function stopCam(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  const v=document.getElementById('cam-vid');
+  if(v){v.style.display='none';v.srcObject=null;}
+}
+
+function snapPhoto(){
+  const v=document.getElementById('cam-vid');
+  if(!stream||!v.videoWidth){document.getElementById('cam-st').textContent='Câmera não iniciada.';return;}
+  const c=document.getElementById('cam-can');
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  capturedUrl=c.toDataURL('image/jpeg',0.75);
+  showCaptured(capturedUrl);
+}
+
+function showCaptured(url){
+  document.getElementById('cam-img').src=url;
+  document.getElementById('cam-img').style.display='block';
+  document.getElementById('cam-vid').style.display='none';
+  document.getElementById('cam-ph').style.display='none';
+  document.getElementById('cam-st').textContent='Foto capturada!';
+  document.getElementById('cam-use-wrap').style.display='block';
+  stopCam();
+}
+
+function retakePhoto(){
+  document.getElementById('cam-img').style.display='none';
+  document.getElementById('cam-ph').style.display='flex';
+  document.getElementById('cam-use-wrap').style.display='none';
+  capturedUrl=null;
+  document.getElementById('cam-st').textContent='';
+  startCamera();
+}
+
+function loadFile(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{capturedUrl=e.target.result;showCaptured(capturedUrl);};
+  r.readAsDataURL(f);
+}
+
+function usePhoto(){
+  if(!capturedUrl)return;
+  currentPhoto=capturedUrl;
+  document.getElementById('photo-prev-img').src=capturedUrl;
+  document.getElementById('photo-prev-wrap').style.display='block';
+  document.getElementById('photo-btn-main').style.display='none';
+  stopCam();go('novo');toast('Foto anexada!');
+}
+
+function closeCam(){stopCam();go('novo');}
+function removePhoto(){currentPhoto=null;document.getElementById('photo-prev-wrap').style.display='none';document.getElementById('photo-btn-main').style.display='flex';}
+
+function getAnos(){const s=new Set(txs.map(t=>t.mes?+t.mes.slice(0,4):null).filter(Boolean));s.add(new Date().getFullYear());return[...s].sort();}
+
+function anoStep(d){
+  const anos=getAnos();const idx=anos.indexOf(anoSel);
+  const next=idx+d;
+  if(next>=0&&next<anos.length)anoSel=anos[next];
+  renderDecl();
+}
+
+function renderDecl(){
+  const anos=getAnos();
+  if(!anos.includes(anoSel))anoSel=anos[anos.length-1]||new Date().getFullYear();
+  document.getElementById('ano-disp').textContent=anoSel;
+  const txA=txs.filter(t=>t.mes&&t.mes.startsWith(anoSel));
+  const rC=txA.filter(t=>t.tipo==='receita'&&t.cat!=='Prestação de serviços').reduce((a,t)=>a+t.val,0);
+  const rS=txA.filter(t=>t.tipo==='receita'&&t.cat==='Prestação de serviços').reduce((a,t)=>a+t.val,0);
+  const totR=rC+rS;
+  const totD=txA.filter(t=>t.tipo==='despesa').reduce((a,t)=>a+t.val,0);
+  const luc=totR-totD;
+  const tC=rC*0.08;const tS=rS*0.32;const totT=tC+tS;
+  const pctL=Math.min(100,Math.round((totR/LIMITE)*100));
+  const ultra=totR>LIMITE;
+  document.getElementById('decl-body').innerHTML=
+    (ultra?`<div class="alerta"><i class="ti ti-alert-triangle" style="font-size:18px;flex-shrink:0"></i><span>Limite do MEI ultrapassado! Consulte um contador sobre o desenquadramento imediatamente.</span></div>`:'')
+    +`<div class="card">
+      <div class="card-ttl"><i class="ti ti-file-invoice" style="color:var(--green)"></i>DASN-SIMEI ${anoSel}</div>
+      <div class="decl-row"><span class="decl-lbl">Receita comércio/indústria</span><span>${fmt(rC)}</span></div>
+      <div class="decl-row"><span class="decl-lbl">Receita serviços</span><span>${fmt(rS)}</span></div>
+      <div class="decl-row decl-tot"><span>Total receita bruta</span><span>${fmt(totR)}</span></div>
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:4px"><span>Limite MEI (R$ 81.000)</span><span>${pctL}%</span></div>
+        <div class="bar-w"><div class="bar-f" style="width:${pctL}%;background:${ultra?'#D85A30':'#1D9E75'}"></div></div>
+      </div></div>
+    <div class="card">
+      <div class="card-ttl"><i class="ti ti-calculator" style="color:var(--blue)"></i>Base tributável IRPF</div>
+      <div class="decl-row"><span class="decl-lbl">Tributável comércio (8%)</span><span>${fmt(tC)}</span></div>
+      <div class="decl-row"><span class="decl-lbl">Tributável serviços (32%)</span><span>${fmt(tS)}</span></div>
+      <div class="decl-row"><span class="decl-lbl">Total tributável</span><span>${fmt(totT)}</span></div>
+      <div class="decl-row decl-tot"><span>Lucro isento (distribuição)</span><span style="color:var(--green)">${fmt(totR-totT)}</span></div></div>
+    <div class="card">
+      <div class="card-ttl"><i class="ti ti-trending-up" style="color:var(--amber)"></i>Resultado ${anoSel}</div>
+      <div class="decl-row"><span class="decl-lbl">Receita total</span><span>${fmt(totR)}</span></div>
+      <div class="decl-row"><span class="decl-lbl">Despesas</span><span style="color:var(--red-dark)">− ${fmt(totD)}</span></div>
+      <div class="decl-row decl-tot"><span>Lucro líquido</span><span style="color:${luc>=0?'var(--green)':'var(--red-dark)'}">${fmt(luc)}</span></div></div>`;
+}
+
+function renderRel(){
+  const anos=getAnos();
+  document.getElementById('chart-ano-sel').innerHTML=anos.map(a=>`<button class="fbtn ${a===currentAnoChart?'on':''}" onclick="setChartAno(${a},this)">${a}</button>`).join('');
+  drawChart(currentAnoChart);
+  renderLembretes();
+}
+
+function setChartAno(ano,btn){
+  currentAnoChart=ano;
+  document.querySelectorAll('#chart-ano-sel .fbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  drawChart(ano);
+}
+
+function drawChart(ano){
+  const rec=MESES.map((_,i)=>{const m=String(i+1).padStart(2,'0');return txs.filter(t=>t.tipo==='receita'&&t.mes===`${ano}-${m}`).reduce((a,t)=>a+t.val,0);});
+  const dep=MESES.map((_,i)=>{const m=String(i+1).padStart(2,'0');return txs.filter(t=>t.tipo==='despesa'&&t.mes===`${ano}-${m}`).reduce((a,t)=>a+t.val,0);});
+  const luc=rec.map((r,i)=>r-dep[i]);
+  if(chartInst){chartInst.destroy();chartInst=null;}
+  const ctx=document.getElementById('chart-main');if(!ctx)return;
+  chartInst=new Chart(ctx,{
+    type:'bar',
+    data:{labels:MESES,datasets:[
+      {label:'Receitas',data:rec,backgroundColor:'#1D9E75',borderRadius:3},
+      {label:'Despesas',data:dep,backgroundColor:'#D85A30',borderRadius:3},
+      {label:'Lucro',data:luc,type:'line',borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,.1)',tension:.4,pointRadius:2,fill:true,borderWidth:2,borderDash:[]}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:10}}},
+        y:{beginAtZero:true,ticks:{font:{size:10},callback:v=>{if(v>=1000)return'R$'+(v/1000).toFixed(0)+'k';return'R$'+Math.round(v)}}}
+      }
+    }
+  });
+}
+
+function renderLembretes(){
+  const hoje=new Date();
+  document.getElementById('lembretes').innerHTML=[0,1,2].map(i=>{
+    const d=new Date(hoje.getFullYear(),hoje.getMonth()+i,20);
+    const dias=Math.round((d-hoje)/(864e5));
+    const label=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+    if(dias<0)return`<div class="lembrete venc"><i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0"></i><span><strong>${label}:</strong> DAS venceu há ${Math.abs(dias)} dia(s).</span></div>`;
+    if(dias<=5)return`<div class="lembrete venc"><i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0"></i><span><strong>${label}:</strong> DAS vence em ${dias} dia(s)!</span></div>`;
+    return`<div class="lembrete ok"><i class="ti ti-check" style="font-size:16px;flex-shrink:0"></i><span><strong>${label}:</strong> DAS vence dia 20 (${dias} dias)</span></div>`;
+  }).join('');
+}
+
+function exportCSV(){
+  if(!txs.length){toast('Nenhum dado para exportar.');return;}
+  const rows=txs.map(t=>`"${t.desc.replace(/"/g,'""')}","${t.cat}","${t.tipo}","${t.mes||''}","${t.val.toFixed(2).replace('.',',')}"`);
+  const csv='\uFEFF'+'Descrição,Categoria,Tipo,Mês,Valor (R$)\n'+rows.join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='mei_lancamentos.csv';a.click();
+  toast('CSV exportado!');
+}
+
+function exportPDF(){
+  const hoje=new Date();const ano=anoSel;
+  const txA=txs.filter(t=>t.mes&&t.mes.startsWith(ano));
+  const rC=txA.filter(t=>t.tipo==='receita'&&t.cat!=='Prestação de serviços').reduce((a,t)=>a+t.val,0);
+  const rS=txA.filter(t=>t.tipo==='receita'&&t.cat==='Prestação de serviços').reduce((a,t)=>a+t.val,0);
+  const totR=rC+rS;const totD=txA.filter(t=>t.tipo==='despesa').reduce((a,t)=>a+t.val,0);
+  const luc=totR-totD;
+  const rows=txA.map(t=>`<tr><td>${escHtml(t.desc)}</td><td>${t.cat}</td><td style="color:${t.tipo==='receita'?'#0F6E56':'#993C1D'}">${t.tipo==='receita'?'Receita':'Despesa'}</td><td>${t.mes||''}</td><td align="right">${fmt(t.val)}</td></tr>`).join('');
+  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório MEI ${ano}</title>
+<style>body{font-family:Arial,sans-serif;max-width:720px;margin:40px auto;color:#222;font-size:13px}h1{color:#0F6E56;font-size:20px;margin-bottom:4px}p.sub{color:#888;font-size:12px;margin-bottom:20px}h2{font-size:14px;color:#444;margin:24px 0 8px;border-bottom:1px solid #eee;padding-bottom:5px}.r{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px}.r:last-child{border:none}.tot{font-weight:700;font-size:14px}table{width:100%;border-collapse:collapse;margin-top:8px}th{background:#f5f5f5;padding:7px 9px;text-align:left;font-size:12px;color:#555;border-bottom:1px solid #e0e0e0}td{padding:7px 9px;border-bottom:1px solid #f0f0f0;font-size:12px}.footer{margin-top:32px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:12px}@media print{body{margin:20px}}</style>
+</head><body>
+<h1>MEI Fácil — Relatório Fiscal ${ano}</h1>
+<p class="sub">Gerado em ${hoje.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}</p>
+<h2>DASN-SIMEI ${ano}</h2>
+<div class="r"><span>Receita comércio/indústria</span><span>${fmt(rC)}</span></div>
+<div class="r"><span>Receita serviços</span><span>${fmt(rS)}</span></div>
+<div class="r tot"><span>Total receita bruta</span><span>${fmt(totR)}</span></div>
+<div class="r"><span>Base tributável comércio (8%)</span><span>${fmt(rC*0.08)}</span></div>
+<div class="r"><span>Base tributável serviços (32%)</span><span>${fmt(rS*0.32)}</span></div>
+<div class="r"><span>Total tributável</span><span>${fmt(rC*0.08+rS*0.32)}</span></div>
+<div class="r"><span>Lucro isento (distribuição ao sócio)</span><span style="color:#0F6E56">${fmt(totR-(rC*0.08+rS*0.32))}</span></div>
+<h2>Resultado do Exercício ${ano}</h2>
+<div class="r"><span>Receita total</span><span>${fmt(totR)}</span></div>
+<div class="r"><span>Despesas</span><span style="color:#993C1D">− ${fmt(totD)}</span></div>
+<div class="r tot"><span>Lucro líquido</span><span style="color:${luc>=0?'#0F6E56':'#993C1D'}">${fmt(luc)}</span></div>
+<h2>Lançamentos ${ano} (${txA.length} registros)</h2>
+<table><thead><tr><th>Descrição</th><th>Categoria</th><th>Tipo</th><th>Mês</th><th style="text-align:right">Valor</th></tr></thead>
+<tbody>${rows||'<tr><td colspan="5" style="text-align:center;color:#999;padding:16px">Nenhum lançamento neste ano</td></tr>'}</tbody></table>
+<div class="footer">MEI Fácil · Relatório gerado automaticamente para uso informativo · Consulte sempre um contador habilitado</div>
+</body></html>`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+  a.download=`relatorio_mei_${ano}.html`;a.click();
+  toast('Relatório exportado!');
+}
+
+const hoje=new Date();
+document.getElementById('n-mes').value=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+updateTopbar();renderHome();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+setTimeout(()=>{
+  const isMobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  if(isMobile&&!isStandalone&&!deferredPrompt){
+    document.getElementById('pwa-banner').classList.add('show');
+    const isIOS=/iPhone|iPad/i.test(navigator.userAgent);
+    document.getElementById('pwa-txt').textContent=isIOS?'Toque em Compartilhar → "Adicionar à Tela de Início"':'Menu do Chrome (⋮) → "Adicionar à tela inicial"';
+  }
+},1500);
+</script>
+</body>
+</html>
